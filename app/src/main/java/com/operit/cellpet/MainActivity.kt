@@ -1,54 +1,86 @@
 package com.operit.cellpet
 
+import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import kotlin.math.*
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var engine: CellEngine
+    private val handler = Handler(Looper.getMainLooper())
+    private var running = false
+
+    private lateinit var tvBehavior: TextView
+    private lateinit var tvAge: TextView
+    private lateinit var tvChildren: TextView
+    private lateinit var tvStatus: TextView
+    private lateinit var pbAtp: ProgressBar
+    private lateinit var pbGlucose: ProgressBar
+    private lateinit var pbDamage: ProgressBar
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val tv = TextView(this)
-        tv.textSize = 12f
-        setContentView(tv)
+        setContentView(R.layout.activity_main)
 
-        try {
-            tv.text = "Loading weights..."
+        tvBehavior = findViewById(R.id.tvBehavior)
+        tvAge = findViewById(R.id.tvAge)
+        tvChildren = findViewById(R.id.tvChildren)
+        tvStatus = findViewById(R.id.tvStatus)
+        pbAtp = findViewById(R.id.pbAtp)
+        pbGlucose = findViewById(R.id.pbGlucose)
+        pbDamage = findViewById(R.id.pbDamage)
+        val btnFeed: Button = findViewById(R.id.btnFeed)
+        val btnSoothe: Button = findViewById(R.id.btnSoothe)
 
-            // Copy weights from assets to internal storage
-            val wf = java.io.File(filesDir, "cell_weights.bin")
-            if (!wf.exists()) {
-                assets.open("cell_weights.bin").use { inp ->
-                    wf.outputStream().use { out -> inp.copyTo(out) }
-                }
-            }
-            tv.text = "Weights: ${wf.length()} bytes\nLoading..."
-
-            val trainer = MLPTrainer(wf)
-            tv.text = "Weights loaded\nRunning inference..."
-
-            // Test scenarios
-            val tests = mapOf(
-                "Healthy" to floatArrayOf(7.5f, 0.05f, 0.5f, 1.5f, 0.01f, 0.0f, 0.0f, 5f, 0.08f, 8f, 0.5f, 0.01f),
-                "Damaged" to floatArrayOf(4.0f, 0.45f, 3.0f, 0.8f, 0.02f, 0.0f, 0.0f, 15f, 0.08f, 5f, 1.2f, 0.01f),
-                "Dying" to floatArrayOf(0.8f, 0.85f, 6.0f, 0.3f, 0.05f, 0.0f, 0.0f, 35f, 0.08f, 1f, 1.8f, 0.02f),
-            )
-
-            val sb = StringBuilder()
-            sb.appendLine("CellPet v1.0.6 — Trained Inference")
-            sb.appendLine()
-
-            for ((name, feat) in tests) {
-                val probs = trainer.forward(trainer.normalize(feat))
-                val pred = trainer.predict(feat)
-                sb.appendLine("$name: $pred")
-                sb.appendLine("  ${probs.joinToString { "%.3f".format(it) }}")
-                sb.appendLine()
-            }
-
-            tv.text = sb.toString()
-        } catch (e: Throwable) {
-            tv.text = "CRASH: ${e.javaClass.simpleName}\n${e.message}\n\n${e.stackTraceToString().take(500)}"
+        engine = CellEngine.getInstance(this)
+        if (!engine.state.alive) {
+            tvStatus.text = "Failed to load model"
+            return
         }
+
+        btnFeed.setOnClickListener { engine.feed(); updateUI() }
+        btnSoothe.setOnClickListener { engine.soothe(); updateUI() }
+
+        running = true
+        startService(Intent(this, CellService::class.java))
+        startMainLoop()
+    }
+
+    private fun startMainLoop() {
+        handler.postDelayed(object : Runnable {
+            override fun run() {
+                if (!running) return
+                engine.tick()
+                updateUI()
+                handler.postDelayed(this, 3000)
+            }
+        }, 3000)
+    }
+
+    private fun updateUI() {
+        val s = engine.state
+        if (!s.alive) {
+            tvBehavior.text = "Died"
+            tvStatus.text = "Lived " + s.age + " ticks, " + s.children + " children"
+            running = false
+            return
+        }
+        tvBehavior.text = s.behaviorName()
+        tvAge.text = "Age: " + s.age
+        tvChildren.text = "Children: " + s.children + " (Gen " + s.generation + ")"
+        pbAtp.progress = (s.atp / 10f * 100).toInt()
+        pbGlucose.progress = (s.glucose / 20f * 100).toInt()
+        pbDamage.progress = (s.damage * 100).toInt()
+        tvStatus.text = "ATP: " + "%.1f".format(s.atp) + " | Damage: " + "%.0f".format(s.damage * 100) + "%"
+    }
+
+    override fun onDestroy() {
+        running = false
+        engine.close()
+        super.onDestroy()
     }
 }
