@@ -21,11 +21,10 @@ jobs:
         run: |
           curl -sL "https://services.gradle.org/distributions/gradle-8.5-bin.zip" -o /tmp/gradle.zip
           unzip -q /tmp/gradle.zip -d /tmp/
-          cp /tmp/gradle-8.5/lib/gradle-wrapper-8.5.jar gradle/wrapper/gradle-wrapper.jar
-          chmod +x gradlew
+          echo "org.gradle.jvmargs=-Xmx2048m" >> gradle.properties
 
       - name: Build debug APK
-        run: ./gradlew assembleDebug --no-daemon
+        run: /tmp/gradle-8.5/bin/gradle assembleDebug --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
