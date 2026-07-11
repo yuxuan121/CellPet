@@ -118,6 +118,14 @@
         android:backgroundTint="#7C4DFF"
         android:layout_marginBottom="8dp"/>
 
+    <Button
+        android:id="@+id/btnReset"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="🔄 重置细胞"
+        android:backgroundTint="#607D8B"
+        android:layout_marginBottom="8dp"/>
+
     <TextView
         android:id="@+id/tvTrainStatus"
         android:layout_width="wrap_content"

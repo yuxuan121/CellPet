@@ -20,6 +20,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvStatus: TextView
     private lateinit var tvTrainStatus: TextView
     private lateinit var btnTrain: Button
+    private lateinit var btnReset: Button
     private lateinit var pbAtp: ProgressBar
     private lateinit var pbGlucose: ProgressBar
     private lateinit var pbDamage: ProgressBar
@@ -34,6 +35,7 @@ class MainActivity : AppCompatActivity() {
         tvStatus = findViewById(R.id.tvStatus)
         tvTrainStatus = findViewById(R.id.tvTrainStatus)
         btnTrain = findViewById(R.id.btnTrain)
+        btnReset = findViewById(R.id.btnReset)
         pbAtp = findViewById(R.id.pbAtp)
         pbGlucose = findViewById(R.id.pbGlucose)
         pbDamage = findViewById(R.id.pbDamage)
@@ -49,6 +51,7 @@ class MainActivity : AppCompatActivity() {
         btnFeed.setOnClickListener { engine.feed(); updateUI() }
         btnSoothe.setOnClickListener { engine.soothe(); updateUI() }
         btnTrain.setOnClickListener { startTraining() }
+        btnReset.setOnClickListener { engine.reset(); running = true; updateUI() }
 
         running = true
         try { startService(Intent(this, CellService::class.java)) } catch(e: Exception) {}
