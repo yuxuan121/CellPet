@@ -113,9 +113,11 @@ class MainActivity : AppCompatActivity() {
                 val w = "%.2f".format(engine.weights[hex][i])
                 lines.append(ln + "(" + w + ") ")
             }
-            tvHexagram.text = loTri + "下" + upTri + "上 | " + judgement + "\n变爻权重: " + lines.toString()
+            tvHexagram.text = loTri + "下" + upTri + "上 | " + judgement +
+                "\n变爻权重: " + lines.toString() +
+                "\n语料: " + engine.experienceCount + " 条"
         } else {
-            tvHexagram.text = loTri + "下" + upTri + "上 · " + guaName + "卦"
+            tvHexagram.text = loTri + "下" + upTri + "上 · " + guaName + "卦 · 语料" + engine.experienceCount + "条"
         }
     }
 

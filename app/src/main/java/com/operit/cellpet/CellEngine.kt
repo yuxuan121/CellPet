@@ -58,6 +58,45 @@ class CellEngine private constructor(context: Context) {
         } catch (e: Exception) { /* 静默失败 */ }
     }
 
+    // ==================== 经验语料采集 ====================
+
+    data class ExperienceRecord(
+        val hex: Int, val line: Int, val behavior: String,
+        val atp: Float, val glucose: Float, val damage: Float,
+        val children: Int, val cortisol: Float, val dopamine: Float,
+        val feedback: String, val weight: Float, val age: Long
+    )
+
+    private val expFile: File get() = File(ctx.filesDir, "cell_experience.jsonl")
+    var experienceCount: Int = 0
+        private set
+
+    init {
+        // 启动时统计已有语料数
+        if (expFile.exists()) {
+            try { experienceCount = expFile.readLines().count { it.isNotBlank() } }
+            catch (_: Exception) {}
+        }
+    }
+
+    private fun recordExperience(feedback: String, weight: Float) {
+        val hex = state.hexagram
+        val line = state.changingLine
+        if (line < 0 || line > 5) return
+        val s = state
+        val json = "{\"hex\":$hex,\"line\":$line,\"behavior\":\"${s.behavior}\"," +
+            "\"atp\":${"%.2f".format(s.atp)},\"glucose\":${"%.2f".format(s.glucose)}," +
+            "\"damage\":${"%.3f".format(s.damage)},\"children\":${s.children}," +
+            "\"cortisol\":${"%.2f".format(s.cortisol)},\"dopamine\":${"%.2f".format(s.dopamine)}," +
+            "\"feedback\":\"$feedback\",\"weight\":$weight,\"age\":${s.age}}"
+        synchronized(expFile) {
+            try {
+                expFile.appendText(json + "\n")
+                experienceCount++
+            } catch (_: Exception) {}
+        }
+    }
+
     // ==================== 代谢与卦变决策 ====================
 
     fun tick(): CellState {
@@ -190,18 +229,18 @@ class CellEngine private constructor(context: Context) {
 
     fun feed() {
         state.glucose += 3f; state.nutrient += 1f; state.atp += 2f
-        reinforce(1.0f)  // 认可当前卦变
+        reinforce(1.0f, "user_feed")
         state.lastChangeAcked = true
     }
 
     fun soothe() {
         state.cortisol = (state.cortisol - 1f).coerceAtLeast(0f); state.dopamine += 0.5f
-        reinforce(0.5f)  // 温和认可
+        reinforce(0.5f, "user_soothe")
         state.lastChangeAcked = true
     }
 
     /** 强化学习：用户交互 → 当前卦变权重增加 */
-    private fun reinforce(delta: Float) {
+    private fun reinforce(delta: Float, feedbackType: String) {
         val hex = state.hexagram
         val line = state.changingLine
         if (line < 0 || line > 5) return
@@ -212,6 +251,7 @@ class CellEngine private constructor(context: Context) {
             if (i != line) weights[hex][i] *= 0.95f
         }
         saveWeights()
+        recordExperience(feedbackType, delta)
     }
 
     /** 自然反馈：状态变化驱动的微弱学习信号（无用户参与） */
@@ -222,6 +262,8 @@ class CellEngine private constructor(context: Context) {
         if (line < 0 || line > 5) return
         weights[hex][line] += delta
         saveWeights()
+        val fbType = if (delta > 0f) "natural_pos" else "natural_neg"
+        recordExperience(fbType, delta)
     }
 
     // ==================== 重置 ====================
