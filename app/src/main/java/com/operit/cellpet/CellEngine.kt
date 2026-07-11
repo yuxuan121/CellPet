@@ -55,6 +55,12 @@ class CellEngine private constructor(context: Context) {
         state.age++
 
         // Metabolism
+        // Metabolism: glucose → ATP conversion
+        if (state.glucose > 0.5f) {
+            val converted = min(state.glucose * 0.05f, 0.3f)
+            state.glucose -= converted
+            state.atp += converted * 6f  // 1 glucose ≈ 6 ATP (cellular respiration)
+        }
         state.atp -= 0.05f + Random.nextFloat() * 0.1f
         state.glucose -= 0.03f
         state.damage += 0.002f
@@ -111,8 +117,8 @@ class CellEngine private constructor(context: Context) {
     }
 
     fun feed() {
-        state.glucose += 3f; state.nutrient += 1f
-        userActionLast3 = mutableListOf(1, 1, 1)  // mark last 3 ticks as feed
+        state.glucose += 3f; state.nutrient += 1f; state.atp += 2f
+        userActionLast3 = mutableListOf(1, 1, 1)
     }
 
     fun soothe() {

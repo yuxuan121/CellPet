@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity() {
         pbAtp.progress = (s.atp / 10f * 100).toInt()
         pbGlucose.progress = (s.glucose / 20f * 100).toInt()
         pbDamage.progress = (s.damage * 100).toInt()
-        tvStatus.text = "ATP: " + "%.1f".format(s.atp) + " | 损伤: " + "%.0f".format(s.damage * 100) + "%"
+        tvStatus.text = "ATP: " + "%.1f".format(s.atp) + "/10 | 葡萄糖: " + "%.1f".format(s.glucose) + "/20 | 损伤: " + "%.0f".format(s.damage * 100) + "%"
         tvTrainStatus.text = "样本: " + engine.getSampleCount() + " | " + engine.trainStatus.message
     }
 
