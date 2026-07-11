@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
 
         engine = CellEngine.getInstance(this)
         if (!engine.state.alive) {
-            tvStatus.text = "Failed to load model"
+            tvStatus.text = "模型加载失败"
             return
         }
 
@@ -69,18 +69,18 @@ class MainActivity : AppCompatActivity() {
     private fun updateUI() {
         val s = engine.state
         if (!s.alive) {
-            tvBehavior.text = "Died"
-            tvStatus.text = "Lived " + s.age + " ticks, " + s.children + " children"
+            tvBehavior.text = "已凋亡"
+            tvStatus.text = "存活: " + s.age + " 轮 | 子代: " + s.children
             running = false
             return
         }
         tvBehavior.text = s.behaviorName()
-        tvAge.text = "Age: " + s.age
-        tvChildren.text = "Children: " + s.children + " (Gen " + s.generation + ")"
+        tvAge.text = "年龄: " + s.age
+        tvChildren.text = "子代: " + s.children + " (第" + s.generation + "代)"
         pbAtp.progress = (s.atp / 10f * 100).toInt()
         pbGlucose.progress = (s.glucose / 20f * 100).toInt()
         pbDamage.progress = (s.damage * 100).toInt()
-        tvStatus.text = "ATP: " + "%.1f".format(s.atp) + " | Damage: " + "%.0f".format(s.damage * 100) + "%"
+        tvStatus.text = "ATP: " + "%.1f".format(s.atp) + " | 损伤: " + "%.0f".format(s.damage * 100) + "%"
         tvTrainStatus.text = "样本: " + engine.getSampleCount() + " | " + engine.trainStatus.message
     }
 

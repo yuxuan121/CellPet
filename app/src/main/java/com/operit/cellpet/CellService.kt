@@ -17,11 +17,11 @@ class CellService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         try {
-            val channel = NotificationChannel("cell_life", "Cell Life", NotificationManager.IMPORTANCE_LOW)
+            val channel = NotificationChannel("cell_life", "细胞生命", NotificationManager.IMPORTANCE_LOW)
             getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
             val notif = NotificationCompat.Builder(this, "cell_life")
-                .setContentTitle("Cell Pet")
-                .setContentText("Cell is alive...")
+                .setContentTitle("细胞宠物")
+                .setContentText("细胞存活中…")
                 .setSmallIcon(android.R.drawable.ic_menu_manage)
                 .setOngoing(true)
                 .build()
@@ -34,15 +34,15 @@ class CellService : Service() {
                         if (s.alive) {
                             val n = NotificationCompat.Builder(this@CellService, "cell_life")
                                 .setContentTitle(s.behaviorName() + " | ATP: " + "%.1f".format(s.atp))
-                                .setContentText("Children: " + s.children + " | Damage: " + "%.0f".format(s.damage * 100) + "%")
+                                .setContentText("子代: " + s.children + " | 损伤: " + "%.0f".format(s.damage * 100) + "%")
                                 .setSmallIcon(android.R.drawable.ic_menu_manage)
                                 .setOngoing(true)
                                 .build()
                             nm.notify(1, n)
                         } else {
                             val n = NotificationCompat.Builder(this@CellService, "cell_life")
-                                .setContentTitle("Cell Died")
-                                .setContentText("Lived " + s.age + " ticks, had " + s.children + " children")
+                                .setContentTitle("细胞凋亡")
+                                .setContentText("存活" + s.age + "轮，子代" + s.children + "个")
                                 .setSmallIcon(android.R.drawable.ic_menu_manage)
                                 .build()
                             nm.notify(1, n)

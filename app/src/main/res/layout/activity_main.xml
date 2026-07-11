@@ -15,7 +15,7 @@
         android:id="@+id/tvBehavior"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Loading..."
+        android:text="加载中…"
         android:textSize="28sp"
         android:textColor="#FF6B9D"
         android:textStyle="bold"
@@ -25,7 +25,7 @@
         android:id="@+id/tvAge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Age: 0"
+        android:text="年龄: 0"
         android:textSize="14sp"
         android:textColor="#9E9E9E"/>
 
@@ -33,7 +33,7 @@
         android:id="@+id/tvChildren"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Children: 0"
+        android:text="子代: 0 (第1代)"
         android:textSize="14sp"
         android:textColor="#9E9E9E"
         android:layout_marginBottom="20dp"/>
@@ -41,7 +41,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ATP"
+        android:text="ATP 能量"
         android:textColor="#4CAF50"
         android:textSize="12sp"/>
     <ProgressBar
@@ -57,7 +57,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Glucose"
+        android:text="葡萄糖"
         android:textColor="#FFC107"
         android:textSize="12sp"/>
     <ProgressBar
@@ -73,7 +73,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Damage"
+        android:text="损伤程度"
         android:textColor="#FF5252"
         android:textSize="12sp"/>
     <ProgressBar
@@ -97,7 +97,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Feed"
+            android:text="🍖 喂食"
             android:layout_marginEnd="8dp"
             android:backgroundTint="#FFC107"/>
 
@@ -106,7 +106,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Soothe"
+            android:text="🤲 安抚"
             android:backgroundTint="#FF6B9D"/>
     </LinearLayout>
 
@@ -114,7 +114,7 @@
         android:id="@+id/btnTrain"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Train Model"
+        android:text="🧠 训练模型"
         android:backgroundTint="#7C4DFF"
         android:layout_marginBottom="8dp"/>
 
@@ -131,7 +131,7 @@
         android:id="@+id/tvStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Starting cell..."
+        android:text="启动细胞…"
         android:textSize="12sp"
         android:textColor="#9E9E9E"/>
 
