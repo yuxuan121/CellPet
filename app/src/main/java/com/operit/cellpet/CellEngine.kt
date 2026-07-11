@@ -5,6 +5,7 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.random.Random
+import kotlin.math.*
 
 class CellEngine private constructor(context: Context) {
     companion object {
@@ -55,7 +56,7 @@ class CellEngine private constructor(context: Context) {
         state.age++
 
         // Metabolism
-        // Metabolism: glucose → ATP conversion
+        // glucose → ATP conversion (cellular respiration)
         if (state.glucose > 0.5f) {
             val converted = min(state.glucose * 0.05f, 0.3f)
             state.glucose -= converted
