@@ -57,7 +57,14 @@ class MLPTrainer {
         return FloatArray(output) { exp[it] / s }
     }
 
-    fun normalize(raw: FloatArray) = FloatArray(inputDim) { i -> raw[i] } // passthrough for now
+    fun normalize(raw: FloatArray): FloatArray {
+        // Z-score normalization matching Python training scaler
+        val mean = floatArrayOf(5.0514f, 0.21768f, 4.0451f, 2.49288f, 0.015057f, 0.007928f,
+            0.012156f, 26.948f, 0.0809f, 10.163f, 0.6933f, 0.010007f)
+        val std = floatArrayOf(2.8547f, 0.20114f, 2.2987f, 1.4379f, 0.015075f, 0.0079f,
+            0.012032f, 15.894f, 0.27271f, 5.6999f, 0.39633f, 0.010041f)
+        return FloatArray(inputDim) { i -> (raw[i] - mean[i]) / max(std[i], 1e-8f) }
+    }
 
     fun predict(features: FloatArray): String {
         val p = forward(normalize(features))
