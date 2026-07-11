@@ -17,11 +17,11 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup Gradle Wrapper
+      - name: Setup Gradle
         run: |
           curl -sL "https://services.gradle.org/distributions/gradle-8.5-bin.zip" -o /tmp/gradle.zip
           unzip -q /tmp/gradle.zip -d /tmp/
-          echo "org.gradle.jvmargs=-Xmx2048m" >> gradle.properties
+          printf '\norg.gradle.jvmargs=-Xmx2048m\n' >> gradle.properties
 
       - name: Build debug APK
         run: /tmp/gradle-8.5/bin/gradle assembleDebug --no-daemon
