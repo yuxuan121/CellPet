@@ -24,7 +24,7 @@ class CellService : Service() {
             .setSmallIcon(android.R.drawable.ic_menu_manage)
             .setOngoing(true)
             .build()
-        startForeground(1, notif)
+        startForeground(1, notif, android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
 
         timer.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
