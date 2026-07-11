@@ -119,6 +119,14 @@
         android:layout_marginBottom="8dp"/>
 
     <Button
+        android:id="@+id/btnDistill"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="⚗ 蒸馏训练"
+        android:backgroundTint="#00BCD4"
+        android:layout_marginBottom="8dp"/>
+
+    <Button
         android:id="@+id/btnReset"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

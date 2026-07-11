@@ -218,6 +218,11 @@ class CellEngine private constructor(context: Context) {
 
         state.lastChangeAcked = false
 
+        // 影子模式：MLP 预测 vs hex_weights 预测
+        if (shadowMode && state.changingLine >= 0) {
+            shadowCompare(state.changingLine)
+        }
+
         // 钳位
         state.atp = state.atp.coerceIn(0f, 10f)
         state.glucose = state.glucose.coerceIn(0f, 20f)
@@ -274,4 +279,61 @@ class CellEngine private constructor(context: Context) {
     }
 
     fun close() {}
+    
+    // ==================== 蒸馏训练 & 影子模式 ====================
+    
+    val distilledTrainer = DistilledMLPTrainer()
+    private val distilledModelFile: File get() = File(ctx.filesDir, "distilled_mlp.bin")
+    
+    var shadowMode = false
+    var shadowAgreements = 0
+    var shadowTotal = 0
+        private set
+    
+    /** 启用影子模式：MLP 与 hex_weights 并行预测 */
+    fun enableShadowMode(): Boolean {
+        if (!distilledModelFile.exists()) return false
+        val ok = distilledTrainer.loadWeights(distilledModelFile)
+        if (!ok) return false
+        shadowMode = true
+        shadowAgreements = 0
+        shadowTotal = 0
+        return true
+    }
+    
+    fun disableShadowMode() { shadowMode = false }
+    
+    fun shadowAgreementRate(): Float = if (shadowTotal > 0) shadowAgreements.toFloat() / shadowTotal else 0f
+    
+    /** 在 tick 末尾调用：比较 MLP 与 hex_weights 预测 */
+    fun shadowCompare(chosenLine: Int) {
+        if (!shadowMode || chosenLine < 0) return
+        val s = state
+        val (mlpLine, _) = distilledTrainer.shadowPredict(
+            s.atp, s.glucose, s.damage, s.cortisol, s.dopamine, s.children
+        )
+        shadowTotal++
+        if (mlpLine == chosenLine) shadowAgreements++
+    }
+    
+    /** 触发蒸馏训练（需在后台线程调用） */
+    fun trainDistilled(onProgress: ((DistilledMLPTrainer.DistillStatus) -> Unit)?): DistilledMLPTrainer.TrainResult {
+        val samples = distilledTrainer.loadAndDistill(expFile)
+        val result = distilledTrainer.trainDistilled(samples, onProgress)
+        if (samples.size >= 10) {
+            distilledTrainer.saveWeights(distilledModelFile)
+        }
+        return result
+    }
+    
+    /** 获取蒸馏决策规则 */
+    fun getDistilledRules(): List<DistilledMLPTrainer.DecisionRule> {
+        if (!distilledModelFile.exists()) {
+            // 返回基于初始权重的规则
+            distilledTrainer.loadAndDistill(expFile) // 触发放置
+            return distilledTrainer.extractRules()
+        }
+        distilledTrainer.loadWeights(distilledModelFile)
+        return distilledTrainer.extractRules()
+    }
 }

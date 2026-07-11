@@ -21,11 +21,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvHexagram: TextView
     private lateinit var btnGuanGua: Button
     private lateinit var btnReset: Button
+    private lateinit var btnDistill: Button
     private lateinit var pbAtp: ProgressBar
     private lateinit var pbGlucose: ProgressBar
     private lateinit var pbDamage: ProgressBar
 
     private var showDetail = false
+    private var shadowEnabled = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +40,7 @@ class MainActivity : AppCompatActivity() {
         tvHexagram = findViewById(R.id.tvHexagram)
         btnGuanGua = findViewById(R.id.btnGuanGua)
         btnReset = findViewById(R.id.btnReset)
+        btnDistill = findViewById(R.id.btnDistill)
         pbAtp = findViewById(R.id.pbAtp)
         pbGlucose = findViewById(R.id.pbGlucose)
         pbDamage = findViewById(R.id.pbDamage)
@@ -54,6 +57,29 @@ class MainActivity : AppCompatActivity() {
         btnSoothe.setOnClickListener { engine.soothe(); updateUI() }
         btnGuanGua.setOnClickListener { showDetail = !showDetail; updateUI() }
         btnReset.setOnClickListener { engine.reset(); running = true; showDetail = false; updateUI() }
+        btnDistill.setOnClickListener {
+            val count = engine.experienceCount
+            if (count < 5) {
+                tvHexagram.text = "语料不足 (${count}条，需≥5条)"
+                return@setOnClickListener
+            }
+            btnDistill.isEnabled = false
+            btnDistill.text = "⏳ 蒸馏中…"
+            Thread {
+                val result = engine.trainDistilled { status ->
+                    runOnUiThread {
+                        tvHexagram.text = "[${status.phaseName}] epoch ${status.epoch}/${status.totalEpochs} | loss:${"%.3f".format(status.loss)} acc:${"%.1f".format(status.accuracy*100)}% | ${status.sampleCount}条"
+                    }
+                }
+                runOnUiThread {
+                    btnDistill.isEnabled = true
+                    btnDistill.text = if (engine.enableShadowMode()) "🔬 影子模式…" else "⚗ 蒸馏训练"
+                    tvHexagram.text = "蒸馏完成 | 训练集acc:${"%.1f".format(result.finalAccuracy*100)}% 验证acc:${"%.1f".format(result.validationAccuracy*100)}% | 规则:${result.rulesExtracted}条"
+                    shadowEnabled = engine.shadowMode
+                    updateUI()
+                }
+            }.start()
+        }
 
         running = true
         try { startService(Intent(this, CellService::class.java)) } catch(e: Exception) {}
@@ -101,7 +127,7 @@ class MainActivity : AppCompatActivity() {
         pbAtp.progress = (s.atp / 10f * 100).toInt()
         pbGlucose.progress = (s.glucose / 20f * 100).toInt()
         pbDamage.progress = (s.damage * 100).toInt()
-        tvStatus.text = "ATP: " + "%.1f".format(s.atp) + "/10 | 葡萄糖: " + "%.1f".format(s.glucose) + "/20 | 损伤: " + "%.0f".format(s.damage * 100) + "%"
+        tvStatus.text = "ATP: " + "%.1f".format(s.atp) + "/10 | 葡萄糖: " + "%.1f".format(s.glucose) + "/20 | 损伤: " + "%.0f".format(s.damage * 100) + "%" + if (shadowEnabled) " | 影子:" + "%.0f".format(engine.shadowAgreementRate() * 100) + "%" else ""
 
         // 卦象详情
         if (showDetail) {
