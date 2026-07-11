@@ -1,0 +1,10 @@
+<resources>
+    <color name="background">#0D0D1A</color>
+    <color name="surface">#1A1A2E</color>
+    <color name="accent">#FF6B9D</color>
+    <color name="atp_green">#4CAF50</color>
+    <color name="damage_red">#FF5252</color>
+    <color name="glucose_yellow">#FFC107</color>
+    <color name="text_primary">#E0E0E0</color>
+    <color name="text_secondary">#9E9E9E</color>
+</resources>

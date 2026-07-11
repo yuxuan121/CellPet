@@ -1,0 +1,11 @@
+<resources>
+    <style name="Theme.CellPet" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">#FF6B9D</item>
+        <item name="colorPrimaryVariant">#FF4081</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSecondary">#4FC3F7</item>
+        <item name="colorSurface">#1A1A2E</item>
+        <item name="colorOnSurface">#E0E0E0</item>
+        <item name="android:statusBarColor">#0D0D1A</item>
+    </style>
+</resources>

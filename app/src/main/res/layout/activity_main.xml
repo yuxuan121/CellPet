@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0D0D1A">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/tvBehavior"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Loading..."
+        android:textSize="28sp"
+        android:textColor="#FF6B9D"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/tvAge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Age: 0"
+        android:textSize="14sp"
+        android:textColor="#9E9E9E"/>
+
+    <TextView
+        android:id="@+id/tvChildren"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Children: 0"
+        android:textSize="14sp"
+        android:textColor="#9E9E9E"
+        android:layout_marginBottom="20dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ATP"
+        android:textColor="#4CAF50"
+        android:textSize="12sp"/>
+    <ProgressBar
+        android:id="@+id/pbAtp"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:max="100"
+        android:progress="65"
+        android:progressTint="#4CAF50"
+        android:layout_marginBottom="12dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Glucose"
+        android:textColor="#FFC107"
+        android:textSize="12sp"/>
+    <ProgressBar
+        android:id="@+id/pbGlucose"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:max="100"
+        android:progress="50"
+        android:progressTint="#FFC107"
+        android:layout_marginBottom="12dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Damage"
+        android:textColor="#FF5252"
+        android:textSize="12sp"/>
+    <ProgressBar
+        android:id="@+id/pbDamage"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:max="100"
+        android:progress="10"
+        android:progressTint="#FF5252"
+        android:layout_marginBottom="20dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp">
+
+        <Button
+            android:id="@+id/btnFeed"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Feed"
+            android:layout_marginEnd="8dp"
+            android:backgroundTint="#FFC107"/>
+
+        <Button
+            android:id="@+id/btnSoothe"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Soothe"
+            android:backgroundTint="#FF6B9D"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Starting cell..."
+        android:textSize="12sp"
+        android:textColor="#9E9E9E"/>
+
+</LinearLayout>
+</ScrollView>
