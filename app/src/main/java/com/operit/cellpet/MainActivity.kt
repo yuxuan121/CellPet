@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
         val btnFeed: Button = findViewById(R.id.btnFeed)
         val btnSoothe: Button = findViewById(R.id.btnSoothe)
 
-        engine = CellEngine(this)
+        engine = CellEngine.getInstance(this)
         if (!engine.state.alive) {
             tvStatus.text = "Failed to load ONNX model"
             return

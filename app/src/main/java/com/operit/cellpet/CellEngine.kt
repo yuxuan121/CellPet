@@ -1,21 +1,35 @@
 package com.operit.cellpet
 
 import android.content.Context
+import android.util.Log
 import ai.onnxruntime.*
 import java.nio.FloatBuffer
 import kotlin.random.Random
 
-class CellEngine(context: Context) {
+class CellEngine private constructor(context: Context) {
+    companion object {
+        private var INSTANCE: CellEngine? = null
+        fun getInstance(context: Context): CellEngine {
+            return INSTANCE ?: synchronized(this) {
+                INSTANCE ?: CellEngine(context.applicationContext).also { INSTANCE = it }
+            }
+        }
+    }
+
     private var session: OrtSession? = null
     private var env: OrtEnvironment? = null
     var state = CellState()
 
     init {
         try {
+            Log.d("CellPet", "Loading ONNX model...")
             env = OrtEnvironment.getEnvironment()
             val modelBytes = context.assets.open("cell_decision_model.onnx").readBytes()
+            Log.d("CellPet", "Model size: ${modelBytes.size} bytes")
             session = env?.createSession(modelBytes)
-        } catch (e: Exception) {
+            Log.d("CellPet", "ONNX session created OK")
+        } catch (e: Throwable) {
+            Log.e("CellPet", "Failed to load ONNX: ${e.javaClass.simpleName}: ${e.message}", e)
             state.alive = false
         }
     }

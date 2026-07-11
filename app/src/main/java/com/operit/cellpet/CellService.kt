@@ -12,7 +12,7 @@ class CellService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        engine = CellEngine(this)
+        engine = CellEngine.getInstance(this)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
