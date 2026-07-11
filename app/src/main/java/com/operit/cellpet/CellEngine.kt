@@ -65,6 +65,12 @@ class CellEngine private constructor(context: Context) {
 
         state.age++
 
+        // ---- 记录代谢前状态（用于自然反馈） ----
+        val oldAtp = state.atp
+        val oldDamage = state.damage
+        val oldGlucose = state.glucose
+        val oldChildren = state.children
+
         // ---- 代谢 ----
         // 葡萄糖→ATP 呼吸转化
         if (state.glucose > 0.5f) {
@@ -83,6 +89,22 @@ class CellEngine private constructor(context: Context) {
         // 低能量/低血糖 → 损伤加速
         if (state.atp < 1.0f) state.damage += 0.05f
         if (state.glucose < 0.5f) state.damage += 0.03f
+
+        // ---- 自然反馈：上一轮卦变未被用户反馈 → 从状态变化自学 ----
+        if (state.changingLine >= 0 && !state.lastChangeAcked) {
+            val dAtp = state.atp - oldAtp
+            val dDamage = oldDamage - state.damage       // 正值=改善
+            val dChildren = state.children - oldChildren
+            val improvement = dAtp * 0.1f + dDamage * 2f + dChildren * 0.5f
+
+            if (improvement > 0.3f) {
+                reinforceNatural(0.2f)   // 状态改善 → 微弱正反馈
+            } else if (improvement < -0.3f) {
+                reinforceNatural(-0.1f)  // 状态恶化 → 微弱惩罚
+            }
+            // 自然反馈后清零，避免下轮重复
+            state.changingLine = -1
+        }
 
         // ---- 计算当前卦象 ----
         state.computeHexagram()
@@ -155,12 +177,6 @@ class CellEngine private constructor(context: Context) {
             state.atp += 0.05f  // 静息微量恢复
         }
 
-        // 上轮卦变未获反馈 → 轻微遗忘
-        if (state.changingLine >= 0 && !state.lastChangeAcked) {
-            val oldLine = state.changingLine
-            // 下一轮再处理（这轮刚做完决策，还没机会被 ack）
-            // 实际遗忘在上轮没被 ack 时发生
-        }
         state.lastChangeAcked = false
 
         // 钳位
@@ -195,6 +211,16 @@ class CellEngine private constructor(context: Context) {
         for (i in 0 until 6) {
             if (i != line) weights[hex][i] *= 0.95f
         }
+        saveWeights()
+    }
+
+    /** 自然反馈：状态变化驱动的微弱学习信号（无用户参与） */
+    private fun reinforceNatural(delta: Float) {
+        // 注意：此时 state.hexagram 还是上一轮的值（computeHexagram 尚未被调用）
+        val hex = state.hexagram
+        val line = state.changingLine
+        if (line < 0 || line > 5) return
+        weights[hex][line] += delta
         saveWeights()
     }
 
