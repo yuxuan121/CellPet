@@ -1,9 +1,9 @@
 package com.operit.cellpet
 
 import android.content.Context
+import java.io.DataInputStream
+import java.io.DataOutputStream
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.*
 import kotlin.random.Random
 import kotlin.math.*
 
@@ -18,49 +18,59 @@ class CellEngine private constructor(context: Context) {
     }
 
     var state = CellState()
-    val trainer: MLPTrainer
     private val ctx = context.applicationContext
 
-    // ---- 训练数据 ----
-    data class Sample(val features: FloatArray, val target: Int, val timestamp: Long = System.currentTimeMillis())
-    private val samples = mutableListOf<Sample>()
-    private var userActionLast3: MutableList<Int> = mutableListOf(0, 0, 0)  // 0=none,1=feed,2=soothe
-
-    // ---- 训练状态 ----
-    data class TrainStatus(
-        var running: Boolean = false,
-        var currentEpoch: Int = 0,
-        var totalEpochs: Int = 0,
-        var loss: Float = 0f,
-        var acc: Float = 0f,
-        var message: String = "就绪"
-    )
-    val trainStatus = TrainStatus()
+    // ==================== 卦变权重表 [64卦][6爻] ====================
+    // 权重越大，该卦象下选择该变爻的概率越高
+    var weights: Array<FloatArray> = Array(64) { Hexagram.BASE_BIAS.copyOf() }
+    private val weightFile: File get() = File(ctx.filesDir, "hex_weights.bin")
 
     init {
-        val wf = File(ctx.filesDir, "cell_weights.bin")
-        if (!wf.exists()) {
-            ctx.assets.open("cell_weights.bin").use { inp ->
-                wf.outputStream().use { out -> inp.copyTo(out) }
-            }
-        }
-        trainer = MLPTrainer(wf)
+        loadWeights()
+        // 初始卦象
+        state.computeHexagram()
     }
 
-    // ==================== 训练数据采集 ====================
+    // ==================== 权重持久化 ====================
 
-    /** 每个 tick 记录当前状态+模型预测行为 */
+    private fun loadWeights() {
+        if (!weightFile.exists()) return
+        try {
+            DataInputStream(weightFile.inputStream().buffered()).use { dis ->
+                for (g in 0 until 64) {
+                    for (l in 0 until 6) {
+                        weights[g][l] = dis.readFloat()
+                    }
+                }
+            }
+        } catch (e: Exception) { /* 保留默认偏置 */ }
+    }
+
+    private fun saveWeights() {
+        try {
+            DataOutputStream(weightFile.outputStream().buffered()).use { dos ->
+                for (g in 0 until 64) {
+                    for (l in 0 until 6) {
+                        dos.writeFloat(weights[g][l])
+                    }
+                }
+            }
+        } catch (e: Exception) { /* 静默失败 */ }
+    }
+
+    // ==================== 代谢与卦变决策 ====================
+
     fun tick(): CellState {
         if (!state.alive) return state
 
         state.age++
 
-        // Metabolism
-        // glucose → ATP conversion (cellular respiration)
+        // ---- 代谢 ----
+        // 葡萄糖→ATP 呼吸转化
         if (state.glucose > 0.5f) {
             val converted = min(state.glucose * 0.05f, 0.3f)
             state.glucose -= converted
-            state.atp += converted * 6f  // 1 glucose ≈ 6 ATP (cellular respiration)
+            state.atp += converted * 6f
         }
         state.atp -= 0.05f + Random.nextFloat() * 0.1f
         state.glucose -= 0.03f
@@ -70,106 +80,130 @@ class CellEngine private constructor(context: Context) {
         state.dopamine = (state.dopamine - 0.02f).coerceAtLeast(0f)
         state.serotonin = (state.serotonin - 0.01f).coerceAtLeast(0f)
 
+        // 低能量/低血糖 → 损伤加速
         if (state.atp < 1.0f) state.damage += 0.05f
         if (state.glucose < 0.5f) state.damage += 0.03f
 
-        // Current state features
-        val features = state.toMLPInput()
+        // ---- 计算当前卦象 ----
+        state.computeHexagram()
+        val hex = state.hexagram
 
-        // User-action-based target: if user recently fed/soothed, override target
-        val recentAction = userActionLast3.maxOrNull() ?: 0
-        val modelTarget = trainer.forward(trainer.normalize(features)).indices.maxByOrNull { trainer.forward(trainer.normalize(features))[it] } ?: 5
+        // ---- 确定变化概率（压力越大，越可能寻求变化） ----
+        var changeProb = 0.2f
+        if (state.damage > 0.5f) changeProb += 0.2f
+        if (state.cortisol > 3f) changeProb += 0.15f
+        if (state.atp < 2f) changeProb += 0.15f
+        changeProb = changeProb.coerceIn(0.1f, 0.8f)
 
-        // Determine target: user action overrides model for recent ticks
-        val behaviorIdx: Int
-        when (recentAction) {
-            1 -> behaviorIdx = 4  // feed → target=store
-            2 -> behaviorIdx = 1  // soothe → target=repair
-            else -> behaviorIdx = modelTarget  // use model prediction
+        // ---- 卦变决策 ----
+        if (Random.nextFloat() < changeProb) {
+            // softmax 选择变爻
+            val w = weights[hex]
+            val temperature = 0.5f
+            val maxW = w.maxOrNull()!!
+            val expW = FloatArray(6) { exp((w[it] - maxW) / temperature) }
+            val sumExp = expW.sum()
+            val probs = FloatArray(6) { expW[it] / sumExp }
+
+            // 按概率采样
+            val r = Random.nextFloat()
+            var cum = 0f
+            var chosen = 5  // 默认上爻（最安全的选择）
+            for (i in 0 until 6) {
+                cum += probs[i]
+                if (r <= cum) { chosen = i; break }
+            }
+
+            val lineYangBefore = state.lineYang(chosen)
+            state.changingLine = chosen
+            state.targetHexagram = hex xor (1 shl chosen)
+
+            // 变爻 → 行为
+            state.behavior = Hexagram.LINE_BEHAVIORS[chosen]
+
+            // ---- 执行行为 ----
+            when (state.behavior) {
+                "divide" -> {
+                    if (state.atp > 3f && state.damage < 0.3f) {
+                        state.children++; state.divideCount++; state.atp -= 3f
+                    } else {
+                        state.behavior = "wait"  // 条件不满足，改为等待
+                        state.changingLine = -1
+                    }
+                }
+                "repair" -> {
+                    if (state.atp > 2f) {
+                        state.damage = (state.damage * 0.5f).coerceAtLeast(0f); state.atp -= 2f
+                    } else {
+                        state.behavior = "wait"; state.changingLine = -1
+                    }
+                }
+                "apoptose" -> {
+                    state.alive = false
+                }
+                "store" -> {
+                    state.glucose += 1f; state.atp -= 0.5f
+                }
+                "wait" -> {
+                    state.atp += 0.1f  // 等待时微量恢复
+                }
+            }
+        } else {
+            // 不变：等待
+            state.behavior = "wait"
+            state.changingLine = -1
+            state.atp += 0.05f  // 静息微量恢复
         }
 
-        // MLP inference (still use model for actual behavior)
-        val probs = trainer.forward(trainer.normalize(features))
-        val maxIdx = probs.indices.maxByOrNull { probs[it] } ?: 5
-        state.behavior = CellState.BEHAVIORS[maxIdx]
-
-        // Execute behavior
-        when (state.behavior) {
-            "divide" -> { if (state.atp > 3f && state.damage < 0.3f) { state.children++; state.divideCount++; state.atp -= 3f } }
-            "repair" -> { if (state.atp > 2f) { state.damage = (state.damage * 0.5f).coerceAtLeast(0f); state.atp -= 2f } }
-            "apoptose" -> { state.alive = false }
-            "store" -> { state.glucose += 1f; state.atp -= 0.5f }
-            "wait" -> { state.atp += 0.1f }
+        // 上轮卦变未获反馈 → 轻微遗忘
+        if (state.changingLine >= 0 && !state.lastChangeAcked) {
+            val oldLine = state.changingLine
+            // 下一轮再处理（这轮刚做完决策，还没机会被 ack）
+            // 实际遗忘在上轮没被 ack 时发生
         }
+        state.lastChangeAcked = false
 
-        // Collect sample (target = user-corrected or model's own decision)
-        if (samples.size < 5000) {
-            samples.add(Sample(features, behaviorIdx))
-        }
-
-        // Shift action history
-        userActionLast3.removeAt(0)
-        userActionLast3.add(0)
-
+        // 钳位
         state.atp = state.atp.coerceIn(0f, 10f)
         state.glucose = state.glucose.coerceIn(0f, 20f)
         state.damage = state.damage.coerceIn(0f, 1f)
         return state
     }
 
+    // ==================== 用户交互 ====================
+
     fun feed() {
         state.glucose += 3f; state.nutrient += 1f; state.atp += 2f
-        userActionLast3 = mutableListOf(1, 1, 1)
+        reinforce(1.0f)  // 认可当前卦变
+        state.lastChangeAcked = true
     }
 
     fun soothe() {
         state.cortisol = (state.cortisol - 1f).coerceAtLeast(0f); state.dopamine += 0.5f
-        userActionLast3 = mutableListOf(2, 2, 2)  // mark last 3 ticks as soothe
+        reinforce(0.5f)  // 温和认可
+        state.lastChangeAcked = true
     }
 
-    fun reset() { state = CellState(); samples.clear(); trainStatus.message = "就绪" }
+    /** 强化学习：用户交互 → 当前卦变权重增加 */
+    private fun reinforce(delta: Float) {
+        val hex = state.hexagram
+        val line = state.changingLine
+        if (line < 0 || line > 5) return
+        // 更新权重
+        weights[hex][line] += delta
+        // 衰减其他变爻（winner-take-more）
+        for (i in 0 until 6) {
+            if (i != line) weights[hex][i] *= 0.95f
+        }
+        saveWeights()
+    }
+
+    // ==================== 重置 ====================
+
+    fun reset() {
+        state = CellState()
+        state.computeHexagram()
+    }
+
     fun close() {}
-
-    // ==================== 自训练 ====================
-
-    fun getSampleCount(): Int = samples.size
-
-    /** 运行自训练（同步，建议在后台线程调用） */
-    fun selfTrain(
-        epochs: Int = 30,
-        lr: Float = 0.01f,
-        batchSize: Int = 16,
-        onProgress: ((TrainStatus) -> Unit)? = null
-    ) {
-        if (samples.size < 50) {
-            trainStatus.message = "样本不足（需≥50，当前${samples.size}）"
-            trainStatus.running = false
-            onProgress?.invoke(trainStatus)
-            return
-        }
-
-        trainStatus.running = true
-        trainStatus.totalEpochs = epochs
-        trainStatus.message = "训练中..."
-
-        val trainingData = samples.map { Pair(it.features, it.target) }
-
-        trainer.trainEpochs(trainingData, epochs, lr, batchSize) { ep, loss, acc ->
-            trainStatus.currentEpoch = ep
-            trainStatus.loss = loss
-            trainStatus.acc = acc
-            trainStatus.message = "Epoch $ep/$epochs"
-            onProgress?.invoke(trainStatus)
-        }
-
-        // Save trained weights
-        val wf = File(ctx.filesDir, "cell_weights_trained.bin")
-        trainer.saveWeights(wf)
-        // Also overwrite main weights file for next start
-        trainer.saveWeights(File(ctx.filesDir, "cell_weights.bin"))
-
-        trainStatus.running = false
-        trainStatus.message = "✅ 训练完成 Loss=${"%.4f".format(trainStatus.loss)} Acc=${"%.1f".format(trainStatus.acc * 100)}%"
-        onProgress?.invoke(trainStatus)
-    }
 }

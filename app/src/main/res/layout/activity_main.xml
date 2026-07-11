@@ -111,10 +111,10 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/btnTrain"
+        android:id="@+id/btnGuanGua"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="🧠 训练模型"
+        android:text="☯ 观卦"
         android:backgroundTint="#7C4DFF"
         android:layout_marginBottom="8dp"/>
 
@@ -127,10 +127,10 @@
         android:layout_marginBottom="8dp"/>
 
     <TextView
-        android:id="@+id/tvTrainStatus"
+        android:id="@+id/tvHexagram"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="样本: 0 | 就绪"
+        android:text="☷下☰上 · 乾卦"
         android:textSize="12sp"
         android:textColor="#B388FF"
         android:layout_marginBottom="8dp"/>
