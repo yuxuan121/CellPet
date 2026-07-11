@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
         btnSoothe.setOnClickListener { engine.soothe(); updateUI() }
 
         running = true
-        startService(Intent(this, CellService::class.java))
+        // startService(Intent(this, CellService::class.java))
         startMainLoop()
     }
 
