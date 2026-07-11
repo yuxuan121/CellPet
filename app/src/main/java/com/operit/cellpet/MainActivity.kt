@@ -18,6 +18,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvAge: TextView
     private lateinit var tvChildren: TextView
     private lateinit var tvStatus: TextView
+    private lateinit var tvTrainStatus: TextView
+    private lateinit var btnTrain: Button
     private lateinit var pbAtp: ProgressBar
     private lateinit var pbGlucose: ProgressBar
     private lateinit var pbDamage: ProgressBar
@@ -30,6 +32,8 @@ class MainActivity : AppCompatActivity() {
         tvAge = findViewById(R.id.tvAge)
         tvChildren = findViewById(R.id.tvChildren)
         tvStatus = findViewById(R.id.tvStatus)
+        tvTrainStatus = findViewById(R.id.tvTrainStatus)
+        btnTrain = findViewById(R.id.btnTrain)
         pbAtp = findViewById(R.id.pbAtp)
         pbGlucose = findViewById(R.id.pbGlucose)
         pbDamage = findViewById(R.id.pbDamage)
@@ -44,6 +48,7 @@ class MainActivity : AppCompatActivity() {
 
         btnFeed.setOnClickListener { engine.feed(); updateUI() }
         btnSoothe.setOnClickListener { engine.soothe(); updateUI() }
+        btnTrain.setOnClickListener { startTraining() }
 
         running = true
         try { startService(Intent(this, CellService::class.java)) } catch(e: Exception) {}
@@ -76,6 +81,31 @@ class MainActivity : AppCompatActivity() {
         pbGlucose.progress = (s.glucose / 20f * 100).toInt()
         pbDamage.progress = (s.damage * 100).toInt()
         tvStatus.text = "ATP: " + "%.1f".format(s.atp) + " | Damage: " + "%.0f".format(s.damage * 100) + "%"
+        tvTrainStatus.text = "样本: " + engine.getSampleCount() + " | " + engine.trainStatus.message
+    }
+
+    private fun startTraining() {
+        if (engine.trainStatus.running) {
+            tvTrainStatus.text = "训练进行中,请稍候..."
+            return
+        }
+        btnTrain.isEnabled = false
+        tvTrainStatus.text = "准备训练..."
+
+        Thread {
+            engine.selfTrain(epochs = 30, lr = 0.01f, batchSize = 16) { status ->
+                runOnUiThread {
+                    tvTrainStatus.text = "样本: " + engine.getSampleCount() +
+                        " | [" + status.currentEpoch + "/" + status.totalEpochs + "] " +
+                        "Loss=" + "%.4f".format(status.loss) +
+                        " Acc=" + "%.1f".format(status.acc * 100) + "%"
+                }
+            }
+            runOnUiThread {
+                btnTrain.isEnabled = true
+                tvTrainStatus.text = "样本: " + engine.getSampleCount() + " | " + engine.trainStatus.message
+            }
+        }.start()
     }
 
     override fun onDestroy() {

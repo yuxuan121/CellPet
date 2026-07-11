@@ -90,7 +90,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginBottom="16dp">
+          android:layout_marginBottom="16dp">
 
         <Button
             android:id="@+id/btnFeed"
@@ -109,6 +109,23 @@
             android:text="Soothe"
             android:backgroundTint="#FF6B9D"/>
     </LinearLayout>
+
+    <Button
+        android:id="@+id/btnTrain"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Train Model"
+        android:backgroundTint="#7C4DFF"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/tvTrainStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="样本: 0 | 就绪"
+        android:textSize="12sp"
+        android:textColor="#B388FF"
+        android:layout_marginBottom="8dp"/>
 
     <TextView
         android:id="@+id/tvStatus"
