@@ -1,0 +1,256 @@
+{
+  "communities": {
+    "0": [
+      "app_src_main_java_com_operit_cellpet_mlptrainer",
+      "app_src_main_java_com_operit_cellpet_mlptrainer_kt_byteorder",
+      "app_src_main_java_com_operit_cellpet_mlptrainer_kt_floatarray",
+      "app_src_main_java_com_operit_cellpet_mlptrainer_kt_intarray",
+      "app_src_main_java_com_operit_cellpet_mlptrainer_kt_java",
+      "app_src_main_java_com_operit_cellpet_mlptrainer_mlptrainer",
+      "app_src_main_java_com_operit_cellpet_mlptrainer_mlptrainer_forward",
+      "app_src_main_java_com_operit_cellpet_mlptrainer_mlptrainer_loadweights",
+      "app_src_main_java_com_operit_cellpet_mlptrainer_mlptrainer_normalize",
+      "app_src_main_java_com_operit_cellpet_mlptrainer_mlptrainer_predict",
+      "app_src_main_java_com_operit_cellpet_mlptrainer_mlptrainer_saveweights",
+      "app_src_main_java_com_operit_cellpet_mlptrainer_mlptrainer_trainbatch",
+      "app_src_main_java_com_operit_cellpet_mlptrainer_mlptrainer_trainepochs",
+      "app_src_main_java_com_operit_cellpet_mlptrainer_mlptrainer_writetensor",
+      "app_src_main_java_com_operit_cellpet_mlptrainer_mlptrainer_writetensor1d"
+    ],
+    "1": [
+      "app_src_main_java_com_operit_cellpet_cellengine_cellengine",
+      "app_src_main_java_com_operit_cellpet_cellengine_cellengine_close",
+      "app_src_main_java_com_operit_cellpet_cellengine_cellengine_disableshadowmode",
+      "app_src_main_java_com_operit_cellpet_cellengine_cellengine_feed",
+      "app_src_main_java_com_operit_cellpet_cellengine_cellengine_recordexperience",
+      "app_src_main_java_com_operit_cellpet_cellengine_cellengine_reinforce",
+      "app_src_main_java_com_operit_cellpet_cellengine_cellengine_reinforcenatural",
+      "app_src_main_java_com_operit_cellpet_cellengine_cellengine_saveweights",
+      "app_src_main_java_com_operit_cellpet_cellengine_cellengine_shadowagreementrate",
+      "app_src_main_java_com_operit_cellpet_cellengine_cellengine_soothe",
+      "app_src_main_java_com_operit_cellpet_cellengine_cellengine_traindistilled"
+    ],
+    "2": [
+      "app_src_main_java_com_operit_cellpet_mainactivity",
+      "app_src_main_java_com_operit_cellpet_mainactivity_mainactivity",
+      "app_src_main_java_com_operit_cellpet_mainactivity_mainactivity_oncreate",
+      "app_src_main_java_com_operit_cellpet_mainactivity_mainactivity_ondestroy",
+      "app_src_main_java_com_operit_cellpet_mainactivity_mainactivity_startmainloop",
+      "app_src_main_java_com_operit_cellpet_mainactivity_mainactivity_updateui",
+      "appcompatactivity",
+      "bundle",
+      "button",
+      "progressbar",
+      "textview"
+    ],
+    "3": [
+      "app_src_main_java_com_operit_cellpet_cellservice",
+      "app_src_main_java_com_operit_cellpet_cellservice_cellservice",
+      "app_src_main_java_com_operit_cellpet_cellservice_cellservice_onbind",
+      "app_src_main_java_com_operit_cellpet_cellservice_cellservice_oncreate",
+      "app_src_main_java_com_operit_cellpet_cellservice_cellservice_ondestroy",
+      "app_src_main_java_com_operit_cellpet_cellservice_cellservice_onstartcommand",
+      "ibinder",
+      "intent",
+      "service"
+    ],
+    "4": [
+      "app_src_main_java_com_operit_cellpet_distilledmlptrainer",
+      "app_src_main_java_com_operit_cellpet_distilledmlptrainer_decisionrule",
+      "app_src_main_java_com_operit_cellpet_distilledmlptrainer_distilledmlptrainer_extractrules",
+      "app_src_main_java_com_operit_cellpet_distilledmlptrainer_distilledmlptrainer_traindistilled",
+      "app_src_main_java_com_operit_cellpet_distilledmlptrainer_distilledmlptrainer_validate",
+      "app_src_main_java_com_operit_cellpet_distilledmlptrainer_distilledsample",
+      "app_src_main_java_com_operit_cellpet_distilledmlptrainer_distillstatus",
+      "app_src_main_java_com_operit_cellpet_distilledmlptrainer_trainresult"
+    ],
+    "5": [
+      "app_src_main_java_com_operit_cellpet_cellengine_cellengine_reset",
+      "app_src_main_java_com_operit_cellpet_cellstate",
+      "app_src_main_java_com_operit_cellpet_cellstate_cellstate",
+      "app_src_main_java_com_operit_cellpet_cellstate_cellstate_behaviorname",
+      "app_src_main_java_com_operit_cellpet_cellstate_cellstate_computehexagram",
+      "app_src_main_java_com_operit_cellpet_cellstate_cellstate_lineyang"
+    ],
+    "6": [
+      "app_src_main_java_com_operit_cellpet_hexagram",
+      "app_src_main_java_com_operit_cellpet_hexagram_hexagram",
+      "app_src_main_java_com_operit_cellpet_hexagram_hexagram_computehexagram",
+      "app_src_main_java_com_operit_cellpet_hexagram_hexagram_linename",
+      "app_src_main_java_com_operit_cellpet_hexagram_hexagram_lowertrigram",
+      "app_src_main_java_com_operit_cellpet_hexagram_hexagram_uppertrigram"
+    ],
+    "7": [
+      "app_src_main_java_com_operit_cellpet_distilledmlptrainer_distilledmlptrainer_forward",
+      "app_src_main_java_com_operit_cellpet_distilledmlptrainer_distilledmlptrainer_normalize",
+      "app_src_main_java_com_operit_cellpet_distilledmlptrainer_distilledmlptrainer_predict",
+      "app_src_main_java_com_operit_cellpet_distilledmlptrainer_distilledmlptrainer_predictwithconfidence",
+      "app_src_main_java_com_operit_cellpet_distilledmlptrainer_kt_floatarray"
+    ],
+    "8": [
+      "app_src_main_java_com_operit_cellpet_distilledmlptrainer_distilledmlptrainer_saveweights",
+      "app_src_main_java_com_operit_cellpet_distilledmlptrainer_distilledmlptrainer_writetensor",
+      "app_src_main_java_com_operit_cellpet_distilledmlptrainer_distilledmlptrainer_writetensor1d",
+      "app_src_main_java_com_operit_cellpet_distilledmlptrainer_kt_byteorder",
+      "app_src_main_java_com_operit_cellpet_distilledmlptrainer_kt_java"
+    ],
+    "9": [
+      "app_src_main_java_com_operit_cellpet_cellengine",
+      "app_src_main_java_com_operit_cellpet_cellengine_experiencerecord",
+      "app_src_main_java_com_operit_cellpet_cellengine_getinstance",
+      "context"
+    ],
+    "10": [
+      "app_src_main_java_com_operit_cellpet_distilledmlptrainer_distilledmlptrainer",
+      "app_src_main_java_com_operit_cellpet_distilledmlptrainer_distilledmlptrainer_loadanddistill",
+      "app_src_main_java_com_operit_cellpet_distilledmlptrainer_distilledmlptrainer_parsesimplejson",
+      "app_src_main_java_com_operit_cellpet_distilledmlptrainer_distilledmlptrainer_shadowpredict"
+    ],
+    "11": [
+      "app_src_main_java_com_operit_cellpet_cellengine_cellengine_enableshadowmode",
+      "app_src_main_java_com_operit_cellpet_cellengine_cellengine_getdistilledrules",
+      "app_src_main_java_com_operit_cellpet_cellengine_cellengine_loadweights"
+    ],
+    "12": [
+      "app_src_main_java_com_operit_cellpet_cellengine_cellengine_shadowcompare",
+      "app_src_main_java_com_operit_cellpet_cellengine_cellengine_tick",
+      "app_src_main_java_com_operit_cellpet_cellengine_kt_floatarray"
+    ],
+    "13": [
+      "app_src_main_java_com_operit_cellpet_distilledmlptrainer_distilledmlptrainer_loadweights",
+      "app_src_main_java_com_operit_cellpet_distilledmlptrainer_distilledmlptrainer_trainbatch",
+      "app_src_main_java_com_operit_cellpet_distilledmlptrainer_kt_intarray"
+    ],
+    "14": [
+      "gradlew",
+      "gradlew__entry"
+    ],
+    "15": [
+      "app_build"
+    ],
+    "16": [
+      "build"
+    ],
+    "17": [
+      "settings"
+    ]
+  },
+  "cohesion": {
+    "0": 0.3142857142857143,
+    "1": 0.3090909090909091,
+    "2": 0.21818181818181817,
+    "3": 0.25,
+    "4": 0.39285714285714285,
+    "5": 0.3333333333333333,
+    "6": 0.3333333333333333,
+    "7": 0.8,
+    "8": 0.6,
+    "9": 0.5,
+    "10": 0.6666666666666666,
+    "11": 0.6666666666666666,
+    "12": 0.6666666666666666,
+    "13": 0.6666666666666666,
+    "14": 1.0,
+    "15": 1.0,
+    "16": 1.0,
+    "17": 1.0
+  },
+  "gods": [
+    {
+      "id": "app_src_main_java_com_operit_cellpet_cellengine_cellengine",
+      "label": "CellEngine",
+      "degree": 21
+    },
+    {
+      "id": "app_src_main_java_com_operit_cellpet_distilledmlptrainer_distilledmlptrainer",
+      "label": "DistilledMLPTrainer",
+      "degree": 19
+    },
+    {
+      "id": "app_src_main_java_com_operit_cellpet_mlptrainer_mlptrainer",
+      "label": "MLPTrainer",
+      "degree": 11
+    },
+    {
+      "id": "app_src_main_java_com_operit_cellpet_mainactivity_mainactivity",
+      "label": "MainActivity",
+      "degree": 10
+    },
+    {
+      "id": "app_src_main_java_com_operit_cellpet_cellservice_cellservice",
+      "label": "CellService",
+      "degree": 7
+    },
+    {
+      "id": "app_src_main_java_com_operit_cellpet_cellstate_cellstate",
+      "label": "CellState",
+      "degree": 6
+    },
+    {
+      "id": "app_src_main_java_com_operit_cellpet_hexagram_hexagram",
+      "label": "Hexagram",
+      "degree": 5
+    },
+    {
+      "id": "app_src_main_java_com_operit_cellpet_distilledmlptrainer_distilledsample",
+      "label": "DistilledSample",
+      "degree": 4
+    },
+    {
+      "id": "app_src_main_java_com_operit_cellpet_cellengine_getinstance",
+      "label": "getInstance()",
+      "degree": 3
+    },
+    {
+      "id": "app_src_main_java_com_operit_cellpet_distilledmlptrainer_distillstatus",
+      "label": "DistillStatus",
+      "degree": 2
+    }
+  ],
+  "surprises": [
+    {
+      "source": "CellService",
+      "target": "CellEngine",
+      "source_files": [
+        "app/src/main/java/com/operit/cellpet/CellService.kt",
+        "app/src/main/java/com/operit/cellpet/CellEngine.kt"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "bridges separate communities"
+    },
+    {
+      "source": "MainActivity",
+      "target": "CellEngine",
+      "source_files": [
+        "app/src/main/java/com/operit/cellpet/MainActivity.kt",
+        "app/src/main/java/com/operit/cellpet/CellEngine.kt"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "bridges separate communities"
+    }
+  ],
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `CellEngine` connect `CellEngine` to `MainActivity`, `CellService`, `CellState`, `CellEngine.kt`, `.getDistilledRules`, `.tick`?",
+      "why": "High betweenness centrality (0.400) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `DistilledMLPTrainer` connect `DistilledMLPTrainer` to `CellEngine`, `.trainDistilled`, `FloatArray`, `.writeTensor`, `.getDistilledRules`, `.trainBatch`?",
+      "why": "High betweenness centrality (0.273) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `MainActivity` connect `MainActivity` to `CellEngine`?",
+      "why": "High betweenness centrality (0.138) - this node is a cross-community bridge."
+    },
+    {
+      "type": "isolated_nodes",
+      "question": "What connects `ExperienceRecord` to the rest of the system?",
+      "why": "1 weakly-connected nodes found - possible documentation gaps or missing edges."
+    }
+  ]
+}

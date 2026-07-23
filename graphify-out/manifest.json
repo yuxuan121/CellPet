@@ -1,0 +1,57 @@
+{
+  "app/build.gradle": {
+    "mtime": 1783779812.0888653,
+    "ast_hash": "797861ca133f7310a247fe31dcc24382",
+    "semantic_hash": "797861ca133f7310a247fe31dcc24382"
+  },
+  "app/src/main/java/com/operit/cellpet/CellEngine.kt": {
+    "mtime": 1783779763.0448654,
+    "ast_hash": "f8382c9e91c83ad19520b9b5740914d5",
+    "semantic_hash": "f8382c9e91c83ad19520b9b5740914d5"
+  },
+  "app/src/main/java/com/operit/cellpet/CellService.kt": {
+    "mtime": 1783759740.8013568,
+    "ast_hash": "770613afda7dd49d89e6628b1684e483",
+    "semantic_hash": "770613afda7dd49d89e6628b1684e483"
+  },
+  "app/src/main/java/com/operit/cellpet/CellState.kt": {
+    "mtime": 1783762971.0485458,
+    "ast_hash": "ac192dc0f6b395ae482325aac3f93fa4",
+    "semantic_hash": "ac192dc0f6b395ae482325aac3f93fa4"
+  },
+  "app/src/main/java/com/operit/cellpet/DistilledMLPTrainer.kt": {
+    "mtime": 1783779733.5248654,
+    "ast_hash": "716f50f251bd8709d71d64a73e475405",
+    "semantic_hash": "716f50f251bd8709d71d64a73e475405"
+  },
+  "app/src/main/java/com/operit/cellpet/Hexagram.kt": {
+    "mtime": 1783762952.3845458,
+    "ast_hash": "7e4c899c0adebd8bd7ce1a4903f78f86",
+    "semantic_hash": "7e4c899c0adebd8bd7ce1a4903f78f86"
+  },
+  "app/src/main/java/com/operit/cellpet/MLPTrainer.kt": {
+    "mtime": 1783759393.3533568,
+    "ast_hash": "a9b56567e45d6224142affdff4cc4e09",
+    "semantic_hash": "a9b56567e45d6224142affdff4cc4e09"
+  },
+  "app/src/main/java/com/operit/cellpet/MainActivity.kt": {
+    "mtime": 1783779799.0368652,
+    "ast_hash": "510f7e35260b1f8bdd86bd239bd2efa2",
+    "semantic_hash": "510f7e35260b1f8bdd86bd239bd2efa2"
+  },
+  "build.gradle": {
+    "mtime": 1783751300.38936,
+    "ast_hash": "25fc150148bda6a61aabee6c9f32b922",
+    "semantic_hash": "25fc150148bda6a61aabee6c9f32b922"
+  },
+  "gradlew": {
+    "mtime": 1783751300.40136,
+    "ast_hash": "1ebf39382358c8f8be84c50d2986989f",
+    "semantic_hash": "1ebf39382358c8f8be84c50d2986989f"
+  },
+  "settings.gradle": {
+    "mtime": 1783751329.74936,
+    "ast_hash": "670dcb1873814fb80112c0480ad8f2d4",
+    "semantic_hash": "670dcb1873814fb80112c0480ad8f2d4"
+  }
+}

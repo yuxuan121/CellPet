@@ -94,12 +94,31 @@ class DistilledMLPTrainer {
     }
 
     // ==================== Mini-batch 训练 ====================
+    /**
+     * @param cycleLambda 道德经循环正则项系数。
+     *   原理："反者道之动"。
+     *   当细胞状态趋于极端值时，预测不应过于自信，
+     *   因为极端意味着反转即将发生。
+     *   正则项 = cycleLambda * extremeness * (ln(6) - entropy) / ln(6)
+     *   其中 extremeness ∈ [0,0.5] 表示状态偏离中点的程度，
+     *   entropy ∈ [0, ln(6)] 表示预测分布的分散程度。
+     *   极端状态 + 低熵(过度自信) → 高惩罚。
+     */
     fun trainBatch(
         xsNorm: List<FloatArray>, targets: IntArray, sampleWeights: FloatArray?,
-        lr: Float = 0.01f, l2Lambda: Float = 1e-4f
+        lr: Float = 0.01f, l2Lambda: Float = 1e-4f,
+        cycleLambda: Float = 0f
     ): Pair<Float, Float> {
         val n = xsNorm.size
         if (n == 0) return Pair(0f, 0f)
+
+        // 道德经循环正则: 计算每个样本的极端度 (0=完全居中, 0.5=完全偏离)
+        // "反者道之动" — 极端状态意味着反转即将发生
+        val extremeness = FloatArray(n) { k ->
+            var sum = 0f; for (j in 0 until INPUT_DIM) sum += abs(xsNorm[k][j] - 0.5f)
+            sum / INPUT_DIM
+        }
+        val lnC = ln(OUTPUT_DIM.toFloat())  // ln(6) ≈ 1.79
 
         // Forward all samples
         val a1s = Array(n) { FloatArray(HIDDEN1) }
@@ -137,10 +156,31 @@ class DistilledMLPTrainer {
             val maxIdx = prob.indices.maxByOrNull { prob[it] }!!
             if (maxIdx == t) correct += (if (sw > 0f) 1 else 0)
 
-            // dz3 = sw * (probs - onehot) / totalWeight
+            // dz3 = sw * (probs - onehot) / totalWeight  （先声明再使用）
             val invN = sw / max(totalWeight, 1f)
             val dz3 = FloatArray(OUTPUT_DIM) { prob[it] * invN }
             dz3[t] -= invN
+
+            // 道德经循环正则: "反者道之动"
+            // 极端状态 + 过度自信 = 惩罚，鼓励极端状态下的不确定性
+            if (cycleLambda > 0f && extremeness[k] > 0.05f) {
+                val eps = 1e-10f
+                var entropy = 0f
+                for (i in 0 until OUTPUT_DIM) {
+                    val pi = prob[i].coerceIn(eps, 1f)
+                    entropy -= pi * ln(pi)
+                }
+                // L_cycle = λ * e * (ln(6) - H) / ln(6)
+                val cycleTerm = cycleLambda * extremeness[k] * (lnC - entropy) / lnC
+                totalLoss += cycleTerm * sw
+
+                // 梯度: ∂L_cycle/∂z_i = -λ * e / ln(6) * p_i * (ln(p_i) + H)
+                val cycleGradScale = -cycleLambda * extremeness[k] / lnC * sw / max(totalWeight, 1f)
+                for (i in 0 until OUTPUT_DIM) {
+                    val pi = prob[i].coerceIn(eps, 1f)
+                    dz3[i] += cycleGradScale * pi * (ln(pi) + entropy)
+                }
+            }
 
             for (i in 0 until OUTPUT_DIM) {
                 for (j in 0 until HIDDEN2) dW3[i][j] += dz3[i] * a2[j]
@@ -330,7 +370,7 @@ class DistilledMLPTrainer {
                     val xsNorm = slice.map { normalize(it.features) }
                     val ys = IntArray(slice.size) { j -> slice[j].behaviorLabel }
                     val ws = FloatArray(slice.size) { j -> slice[j].sampleWeight }
-                    val (loss, acc) = trainBatch(xsNorm, ys, ws, phase.lr)
+                    val (loss, acc) = trainBatch(xsNorm, ys, ws, phase.lr, cycleLambda = 0.05f)
                     epLoss += loss * slice.size; epAcc += acc * slice.size; cnt += slice.size
                 }
 
